@@ -1,0 +1,19 @@
+:host {
+  display: flex;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  background: var(--theme-bg-default);
+  color: var(--theme-text-default);
+  transition-property: background-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
+}
+
+nz-layout{
+  background: inherit;
+  nz-content {
+    background: inherit;
+  }
+}

@@ -1,0 +1,48 @@
+  <nz-layout class="h-screen">
+    <nz-header
+      class="mat-elevation-z6 z-10 bg-primary-default text-primary-contrast-default dark:bg-default-300 dark:text-current transition duration-500">
+      <div class="flex justify-between items-center p-2 h-full">
+        <span class="font-bold m-0 text-2xl">
+          Mi logo
+        </span>
+        <div>
+          <button class="dark:text-primary-default" mat-icon-button aria-label="Ajustes"
+            [matMenuTriggerFor]="menuAjustesGeneral">
+            <mat-icon>settings</mat-icon>
+          </button>
+          <mat-menu #menuAjustesGeneral="matMenu">
+            <button mat-menu-item aria-label="Cambiar modo de tema"
+              (click)="changeThemeMode(componentClass == themeMode.DARK ? themeMode.LIGHT : themeMode.DARK)">
+              <mat-icon [ngClass]="{'text-gray-600': componentClass != themeMode.DARK, 'text-yellow-300': componentClass ==
+                themeMode.DARK}">
+                {{componentClass == themeMode.DARK ? 'lightbulb' : 'dark_mode'}}</mat-icon>
+              {{componentClass == themeMode.DARK ? 'Tema claro' : 'Tema oscuro'}}
+            </button>
+            <button mat-menu-item aria-label="Cambiar color de tema" [matMenuTriggerFor]="paletteMenu">
+              <mat-icon class="text-primary-500">palette</mat-icon>
+              Cambiar tema
+            </button>
+            <mat-menu #paletteMenu="matMenu">
+              <ng-container *ngFor="let theme of themes">
+                <div mat-menu-item *ngIf="theme.getColor.primary+theme.getColor.secondary !=
+                themeSelected.getColor.primary+themeSelected.getColor.secondary" (click)="changeTheme(theme)">
+                  <div class="grid grid-cols-2 gap-0 h-full p-1">
+                    <div class="rounded-l-lg" [ngStyle]="{'background': theme.getColor.primary}"></div>
+                    <div class="rounded-r-lg" [ngStyle]="{'background': theme.getColor.secondary}"></div>
+                  </div>
+                </div>
+              </ng-container>
+            </mat-menu>
+          </mat-menu>
+        </div>
+      </div>
+    </nz-header>
+    <nz-content class="h-full w-full pt-3 px-2 pb-2 overflow-y-auto z-0">
+      <div class="grid grid-rows-3 grid-flow-col gap-2 h-full">
+        <div class="row-span-3 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">1</div>
+        <div class="col-span-2 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">2</div>
+        <div class="row-span-2 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">3</div>
+        <div class="row-span-2 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">4</div>
+      </div>
+    </nz-content>
+  </nz-layout>
