@@ -14,6 +14,7 @@ import { AppComponent } from './app.component';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ThemeInitializerProvider } from './theme/theme-initializer.provider';
 
 registerLocaleData(es);
@@ -31,6 +32,7 @@ registerLocaleData(localeEsCo, 'es');
     MatIconModule,
     MatToolbarModule,
     MatMenuModule,
+    MatTooltipModule,
   ],
   providers: [
     ThemeInitializerProvider,

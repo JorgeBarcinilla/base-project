@@ -11,9 +11,8 @@ export class ThemeService {
   constructor() {
     //Se genera el tema segun los colores seleccionados
     this.currentTheme = new Theme();
-    this.setColorsCSS(this.currentTheme);
-    this.setColorsDefaultCSS(this.currentTheme);
     this.setBaseColorCSS(this.currentTheme);
+    this.setColorsDefaultCSS(this.currentTheme);
   }
 
   getcurrentTheme(): Theme {
@@ -21,10 +20,8 @@ export class ThemeService {
   }
 
   public toggleTheme(theme: Theme) {
-    console.log(theme);
-    theme.changeThemeMode(this.currentTheme.getCurrentMode);
+    theme.changeThemeMode(this.currentTheme.getCurrentModeName);
     this.currentTheme = theme;
-    this.setColorsCSS(this.currentTheme);
     this.setColorsDefaultCSS(this.currentTheme);
   }
 
@@ -36,7 +33,7 @@ export class ThemeService {
   }
 
   private setBaseColorCSS(theme: Theme) {
-    const baseThemeMode = theme.getModes[theme.getCurrentMode].base;
+    const baseThemeMode = theme.getModes[theme.getCurrentModeName].base;
     for (const key in baseThemeMode) {
       if (Object.prototype.hasOwnProperty.call(baseThemeMode, key)) {
         const elementPalette = baseThemeMode[key].palette;
@@ -46,29 +43,32 @@ export class ThemeService {
   }
 
   setColorsDefaultCSS(theme: Theme) {
-    for (const key in theme.getModes[theme.getCurrentMode].color_default) {
+    for (const key in theme.getModes[theme.getCurrentModeName].color_default) {
       if (
         Object.prototype.hasOwnProperty.call(
-          theme.getModes[theme.getCurrentMode].color_default,
+          theme.getModes[theme.getCurrentModeName].color_default,
           key
         )
       ) {
         document.documentElement.style.setProperty(
           '--theme-' + [key] + '-contrast-default',
-          theme.getModes[theme.getCurrentMode].contrast_color_default[key]
+          theme.getModes[theme.getCurrentModeName].contrast_color_default[key]
         );
         document.documentElement.style.setProperty(
           '--theme-' + [key] + '-default',
-          theme.getModes[theme.getCurrentMode].color_default[key]
+          theme.getModes[theme.getCurrentModeName].color_default[key]
         );
       }
     }
+    this.setColorsCSS(theme);
   }
 
   private setColorsCSS(theme: Theme) {
-    for (const key in theme.getPalette) {
-      if (Object.prototype.hasOwnProperty.call(theme.getPalette, key)) {
-        const typeColorPalette = theme.getPalette[key];
+    for (const key in theme.getCurrentMode.palette) {
+      if (
+        Object.prototype.hasOwnProperty.call(theme.getCurrentMode.palette, key)
+      ) {
+        const typeColorPalette = theme.getCurrentMode.palette[key];
         this.setCSSVariables(key, typeColorPalette);
       }
     }
@@ -119,7 +119,7 @@ export class ThemeService {
         document.querySelector("meta[name='theme-color']")
       );
       statusbarAndroid.content =
-        this.currentTheme.getCurrentMode == 'dark'
+        this.currentTheme.getCurrentModeName == 'dark'
           ? this.currentTheme.getModes.dark.base.bg.color
           : this.currentTheme.getModes.light.color_default.primary;
       document.head.append(statusbarAndroid);
@@ -135,139 +135,26 @@ export class ThemeService {
 
   public loadTheme(firstLoad = true): Promise<Event> {
     if (firstLoad) {
-      document.documentElement.classList.add(this.currentTheme.getCurrentMode);
+      document.documentElement.classList.add(
+        this.currentTheme.getCurrentModeName
+      );
     }
     return new Promise<Event>((resolve, reject) => {
       this.loadCss(
-        this.currentTheme.getCurrentMode + '.css',
-        this.currentTheme.getCurrentMode
+        this.currentTheme.getCurrentModeName + '.css',
+        this.currentTheme.getCurrentModeName
       ).then(
         (e) => {
           if (!firstLoad) {
             document.documentElement.classList.add(
-              this.currentTheme.getCurrentMode
+              this.currentTheme.getCurrentModeName
             );
           }
-          this.removeUnusedTheme(this.currentTheme.getOldMode);
+          this.removeUnusedTheme(this.currentTheme.getOldModeName);
           resolve(e);
         },
         (e) => reject(e)
       );
     });
   }
-
-  /*private generatePalette() {
-    for (const key in this.theme.color) {
-      if (Object.prototype.hasOwnProperty.call(this.theme.color, key)) {
-        const colorPalette = this.theme.color[key];
-        for (const color of this.computeColors(colorPalette)) {
-          //Se inserta la variable y color  al style de la aplicacion
-          const key1 = `--theme-${key}-${color.name}`;
-          const value1 = color.hex;
-          document.documentElement.style.setProperty(key1, value1);
-
-          //Se inserta la variable y contraste del color anterior al style de la aplicacion
-          const key2 = `--theme-${key}-contrast-${color.name}`;
-          const value2 = color.darkContrast ? '#000000de' : 'white';
-          document.documentElement.style.setProperty(key2, value2);
-
-          //Se agregan a la variable tema todos los colores generados
-          this.theme.palette[key]['_' + color.name] = value1;
-          this.theme.palette[key].contrast['_' + color.name] = value2;
-
-          //Se revisa cada color de la paleta para elegir el mas adecuado en base a la accesibilidad
-          for (const mode in ThemeMode) {
-            if (Object.prototype.hasOwnProperty.call(ThemeMode, mode)) {
-              const themeMode = ThemeMode[mode];
-              switch (themeMode) {
-                case ThemeMode.dark:
-                  if (
-                    Number.isInteger(Number(color.name)) &&
-                    color.darkContrast
-                  ) {
-                    this.theme.dark.color_default[key] = value1;
-                    this.theme.dark.contrast_color_default[key] = value2;
-                  }
-                  break;
-                case ThemeMode.light:
-                  if (
-                    !this.theme.light.color_default[key] &&
-                    Number.isInteger(Number(color.name)) &&
-                    !color.darkContrast
-                  ) {
-                    this.theme.light.color_default[key] = value1;
-                    this.theme.light.contrast_color_default[key] = value2;
-                  }
-                  break;
-
-                default:
-                  break;
-              }
-            }
-          }
-        }
-      }
-    }
-    this.setColorsDefault();
-  }*/
-
-  /*private setColorsDefault() {
-    switch (this.currentThemeMode) {
-      case ThemeMode.dark:
-        for (const key in this.theme.dark.color_default) {
-          if (
-            Object.prototype.hasOwnProperty.call(
-              this.theme.dark.color_default,
-              key
-            )
-          ) {
-            const color = this.theme.dark.color_default[key];
-            const contrast = this.theme.dark.contrast_color_default[key];
-
-            //Se asigna a la paleta de colores sus colores por defecto segun el tema
-            this.theme.palette[key].default = color;
-            this.theme.palette[key].contrast.default = contrast;
-
-            //Se agrega el valor de color por defacto adecuado en base a la accesibilidad al style de la pagina
-            document.documentElement.style.setProperty(
-              '--theme-' + [key] + '-default',
-              color
-            );
-            document.documentElement.style.setProperty(
-              '--theme-' + [key] + '-contrast-default',
-              contrast
-            );
-          }
-        }
-        break;
-      case ThemeMode.light:
-        for (const key in this.theme.light.color_default) {
-          if (
-            Object.prototype.hasOwnProperty.call(
-              this.theme.light.color_default,
-              key
-            )
-          ) {
-            const color = this.theme.light.color_default[key];
-            const contrast = this.theme.light.contrast_color_default[key];
-            this.theme.palette[key].default = color;
-            this.theme.palette[key].contrast.default = contrast;
-
-            //Se agrega el valor de color por defacto adecuado en base a la accesibilidad al style de la pagina
-            document.documentElement.style.setProperty(
-              '--theme-' + [key] + '-default',
-              color
-            );
-            document.documentElement.style.setProperty(
-              '--theme-' + [key] + '-contrast-default',
-              contrast
-            );
-          }
-        }
-        break;
-
-      default:
-        break;
-    }
-  }*/
 }

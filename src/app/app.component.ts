@@ -53,10 +53,10 @@ export class AppComponent {
     public _themeService: ThemeService
   ) {
     this.themeSelected = this._themeService.getcurrentTheme();
-    this.componentClass = this.themeSelected.getCurrentMode;
+    this.componentClass = this.themeSelected.getCurrentModeName;
     this.overlayContainer
       .getContainerElement()
-      .classList.add(this.themeSelected.getCurrentMode);
+      .classList.add(this.themeSelected.getCurrentModeName);
   }
 
   public changeTheme(theme: Theme) {

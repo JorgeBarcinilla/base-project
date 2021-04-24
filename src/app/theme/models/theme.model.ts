@@ -64,6 +64,7 @@ export class ColorTheme {
   public base: BaseTheme;
   public color_default: ColorType = {};
   public contrast_color_default: ColorType = {};
+  public palette?: Palette = new Palette();
 
   constructor(bgColor: string, textColor: string) {
     this.base = new BaseTheme(bgColor, textColor);
@@ -83,16 +84,6 @@ export class ThemeModeConfig {
   }
 }
 
-/*export class ThemeConfig {
-  modes: ThemeModeConfig = new ThemeModeConfig();
-  color: ColorType = new ColorType();
-  palette: Palette = new Palette();
-
-  constructor(color?: ColorType) {
-    this.color = color
-  }
-};*/
-
 export class Theme {
   private currentMode: ThemeMode = window.matchMedia(
     '(prefers-color-scheme: dark)'
@@ -102,30 +93,33 @@ export class Theme {
   private oldMode: ThemeMode;
   private modes: ThemeModeConfig = new ThemeModeConfig();
   private color: ColorType = new ColorType();
-  private palette?: Palette = new Palette();
 
   constructor(color?: ColorType) {
     if (color) {
       this.color = color;
     }
     this.generateBaseThemeModes();
-    this.generatePalette();
+    this.generateDefaultColors();
   }
 
-  public get getCurrentMode(): ThemeMode {
+  public get getCurrentModeName(): ThemeMode {
     return this.currentMode;
   }
 
-  public get getOldMode(): ThemeMode {
+  public get getCurrentMode(): ColorTheme {
+    return this.modes[this.currentMode];
+  }
+
+  public get getOldModeName(): ThemeMode {
     return this.oldMode;
+  }
+
+  public get getOldMode(): ColorTheme {
+    return this.modes[this.oldMode];
   }
 
   public get getModes(): ThemeModeConfig {
     return this.modes;
-  }
-
-  public get getPalette(): Palette {
-    return this.palette;
   }
 
   public get getColor(): ColorType {
@@ -159,17 +153,10 @@ export class Theme {
     }
   }
 
-  private generatePalette() {
+  private generateDefaultColors() {
     for (const key in this.color) {
       if (Object.prototype.hasOwnProperty.call(this.color, key)) {
-        const colorPalette = this.color[key];
-        for (const color of Color.computeColors(colorPalette)) {
-          //Se agregan a la variable tema todos los colores generados
-          this.palette[key]['_' + color.name] = color.hex;
-          this.palette[key].contrast['_' + color.name] = color.darkContrast
-            ? '#000000de'
-            : 'white';
-
+        for (const color of Color.computeColors(this.color[key])) {
           //Se revisa cada color de la paleta para elegir el mas adecuado en base a la accesibilidad
           for (const mode in this.modes) {
             if (Object.prototype.hasOwnProperty.call(this.modes, mode)) {
@@ -183,6 +170,7 @@ export class Theme {
                     this.modes[mode].contrast_color_default[
                       key
                     ] = color.darkContrast ? '#000000de' : 'white';
+                    this.generatePalette(this.modes[mode], key, color.hex);
                   }
                   break;
                 case ThemeMode.LIGHT:
@@ -195,6 +183,7 @@ export class Theme {
                     this.modes[mode].contrast_color_default[
                       key
                     ] = color.darkContrast ? '#000000de' : 'white';
+                    this.generatePalette(this.modes[mode], key, color.hex);
                   }
                   break;
 
@@ -205,6 +194,16 @@ export class Theme {
           }
         }
       }
+    }
+  }
+
+  private generatePalette(mode: ColorTheme, key: string, defaultColor: string) {
+    for (const color of Color.computeColors(defaultColor)) {
+      //Se agregan a la variable tema todos los colores generados
+      mode.palette[key]['_' + color.name] = color.hex;
+      mode.palette[key].contrast['_' + color.name] = color.darkContrast
+        ? '#000000de'
+        : 'white';
     }
   }
 }

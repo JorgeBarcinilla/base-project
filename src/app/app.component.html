@@ -15,7 +15,7 @@
               (click)="changeThemeMode(componentClass == themeMode.DARK ? themeMode.LIGHT : themeMode.DARK)">
               <mat-icon [ngClass]="{'text-gray-600': componentClass != themeMode.DARK, 'text-yellow-300': componentClass ==
                 themeMode.DARK}">
-                {{componentClass == themeMode.DARK ? 'lightbulb' : 'dark_mode'}}</mat-icon>
+                {{componentClass == themeMode.DARK ? 'light_mode' : 'dark_mode'}}</mat-icon>
               {{componentClass == themeMode.DARK ? 'Tema claro' : 'Tema oscuro'}}
             </button>
             <button mat-menu-item aria-label="Cambiar color de tema" [matMenuTriggerFor]="paletteMenu">
@@ -24,8 +24,8 @@
             </button>
             <mat-menu #paletteMenu="matMenu">
               <ng-container *ngFor="let theme of themes">
-                <div mat-menu-item *ngIf="theme.getColor.primary+theme.getColor.secondary !=
-                themeSelected.getColor.primary+themeSelected.getColor.secondary" (click)="changeTheme(theme)">
+                <div mat-menu-item [ngClass]="{'bg-green-500 bg-opacity-25': theme.getColor.primary+theme.getColor.secondary ==
+                themeSelected.getColor.primary+themeSelected.getColor.secondary}" (click)="changeTheme(theme)">
                   <div class="grid grid-cols-2 gap-0 h-full p-1">
                     <div class="rounded-l-lg" [ngStyle]="{'background': theme.getColor.primary}"></div>
                     <div class="rounded-r-lg" [ngStyle]="{'background': theme.getColor.secondary}"></div>
