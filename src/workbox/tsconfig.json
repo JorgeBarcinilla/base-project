@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "typeRoots": [
+      "./typings"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "lib": [
+      "esnext",
+      "webworker"
+    ]
+  },
+  "files": [
+    "./swtemplate.ts"
+  ],
+}

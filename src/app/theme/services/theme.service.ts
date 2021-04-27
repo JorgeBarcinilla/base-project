@@ -8,11 +8,12 @@ import { Theme, ThemeMode } from '../models/theme.model';
 export class ThemeService {
   private currentTheme: Theme;
 
-  constructor() {
+  constructor(private document: Document) {
     //Se genera el tema segun los colores seleccionados
     this.currentTheme = new Theme();
     this.setBaseColorCSS(this.currentTheme);
     this.setColorsDefaultCSS(this.currentTheme);
+    this.changeStatusbarColor();
   }
 
   getcurrentTheme(): Theme {
@@ -23,13 +24,26 @@ export class ThemeService {
     theme.changeThemeMode(this.currentTheme.getCurrentModeName);
     this.currentTheme = theme;
     this.setColorsDefaultCSS(this.currentTheme);
+    this.changeStatusbarColor();
   }
 
   public toggleThemeMode(theme: ThemeMode): Promise<Event> {
     this.currentTheme.changeThemeMode(theme);
     this.setBaseColorCSS(this.currentTheme);
     this.setColorsDefaultCSS(this.currentTheme);
+    this.changeStatusbarColor();
     return this.loadTheme(false);
+  }
+
+  private changeStatusbarColor() {
+    const statusbarAndroid = <HTMLMetaElement>(
+      this.document.querySelector("meta[name='theme-color']")
+    );
+    statusbarAndroid.content =
+      this.currentTheme.getCurrentModeName == 'dark'
+        ? this.currentTheme.getModes.dark.base.bg.color
+        : this.currentTheme.getModes.light.color_default.primary;
+    this.document.head.append(statusbarAndroid);
   }
 
   private setBaseColorCSS(theme: Theme) {
@@ -50,11 +64,11 @@ export class ThemeService {
           key
         )
       ) {
-        document.documentElement.style.setProperty(
+        this.document.documentElement.style.setProperty(
           '--theme-' + [key] + '-contrast-default',
           theme.getModes[theme.getCurrentModeName].contrast_color_default[key]
         );
-        document.documentElement.style.setProperty(
+        this.document.documentElement.style.setProperty(
           '--theme-' + [key] + '-default',
           theme.getModes[theme.getCurrentModeName].color_default[key]
         );
@@ -85,7 +99,7 @@ export class ThemeService {
                 keyContrast
               )
             ) {
-              document.documentElement.style.setProperty(
+              this.document.documentElement.style.setProperty(
                 '--theme-' +
                   [key] +
                   '-contrast-' +
@@ -95,7 +109,7 @@ export class ThemeService {
             }
           }
         } else {
-          document.documentElement.style.setProperty(
+          this.document.documentElement.style.setProperty(
             '--theme-' + [key] + '-' + keyPalette.replace('_', ''),
             palette[keyPalette]
           );
@@ -105,37 +119,29 @@ export class ThemeService {
   }
 
   private removeUnusedTheme(theme: ThemeMode): void {
-    document.documentElement.classList.remove(theme);
-    const removedThemeStyle = document.getElementById(theme);
+    this.document.documentElement.classList.remove(theme);
+    const removedThemeStyle = this.document.getElementById(theme);
     if (removedThemeStyle) {
-      document.head.removeChild(removedThemeStyle);
+      this.document.head.removeChild(removedThemeStyle);
     }
   }
 
   //Se carga el tema de ant-design correspondiente al modo de tema seleccionado
   private loadCss(href: string, id: string): Promise<Event> {
     return new Promise((resolve, reject) => {
-      const statusbarAndroid = <HTMLMetaElement>(
-        document.querySelector("meta[name='theme-color']")
-      );
-      statusbarAndroid.content =
-        this.currentTheme.getCurrentModeName == 'dark'
-          ? this.currentTheme.getModes.dark.base.bg.color
-          : this.currentTheme.getModes.light.color_default.primary;
-      document.head.append(statusbarAndroid);
-      const style = document.createElement('link');
+      const style = this.document.createElement('link');
       style.rel = 'stylesheet';
       style.href = href;
       style.id = id;
       style.onload = resolve;
       style.onerror = reject;
-      document.head.append(style);
+      this.document.head.append(style);
     });
   }
 
   public loadTheme(firstLoad = true): Promise<Event> {
     if (firstLoad) {
-      document.documentElement.classList.add(
+      this.document.documentElement.classList.add(
         this.currentTheme.getCurrentModeName
       );
     }
@@ -146,7 +152,7 @@ export class ThemeService {
       ).then(
         (e) => {
           if (!firstLoad) {
-            document.documentElement.classList.add(
+            this.document.documentElement.classList.add(
               this.currentTheme.getCurrentModeName
             );
           }
