@@ -10,7 +10,7 @@
     "e2e": "ng e2e",
     "dev-host": "ng serve --host 0.0.0.0 -o",
     "build-sw": "cd src/workbox && npx webpack ./swtemplate.ts --config webpack.config.js && npx workbox injectManifest",
-    "build-app": "concurrently -p=\"{name}\" -n=\"Angular\" -c=\"green\" \"ng build --prod --base-href ./ && npm run build-sw\""
+    "build-app": "concurrently -p=\"{name}\" -n=\"Angular\" -c=\"green\" \"ng build --prod && npm run build-sw\""
   },
   "private": true,
   "dependencies": {
