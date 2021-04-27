@@ -5,7 +5,7 @@
         <span class="font-bold m-0 text-2xl">
           Mi logo
         </span>
-        <div>
+        <span>
           <button class="dark:text-primary-default" mat-icon-button aria-label="Ajustes"
             [matMenuTriggerFor]="menuAjustesGeneral">
             <mat-icon>settings</mat-icon>
@@ -34,15 +34,22 @@
               </ng-container>
             </mat-menu>
           </mat-menu>
-        </div>
+        </span>
       </div>
     </nz-header>
     <nz-content class="h-full w-full pt-3 px-2 pb-2 overflow-y-auto z-0">
       <div class="grid grid-rows-3 grid-flow-col gap-2 h-full">
-        <div class="row-span-3 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">1</div>
-        <div class="col-span-2 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">2</div>
-        <div class="row-span-2 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">3</div>
-        <div class="row-span-2 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">4</div>
+        <div class="row-span-3 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">card 1 </div>
+        <div class="col-span-2 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">card 2 </div>
+        <div class="row-span-2 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">card 3 </div>
+        <div class="row-span-2 bg-default-400 rounded-lg p-1 shadow-md transition duration-500">card 4 </div>
       </div>
     </nz-content>
   </nz-layout>
+
+  <ng-template #offlineSnackBarTempl>
+    <div class="flex flex-row justify-between items-center m-0">
+      Sin conexión a internet
+      <mat-icon [inline]="true">wifi_off</mat-icon>
+    </div>
+  </ng-template>

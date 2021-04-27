@@ -1,6 +1,5 @@
 import { registerLocaleData } from '@angular/common';
-import es from '@angular/common/locales/es';
-import localeEsCo from '@angular/common/locales/es-CO';
+import esCo from '@angular/common/locales/es-CO';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,13 +11,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ThemeInitializerProvider } from './theme/theme-initializer.provider';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { HttpClientModule } from '@angular/common/http';
 
-registerLocaleData(es);
-registerLocaleData(localeEsCo, 'es');
+registerLocaleData(esCo);
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,18 +26,22 @@ registerLocaleData(localeEsCo, 'es');
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     NzLayoutModule,
-    NzBreadCrumbModule,
     MatButtonModule,
     MatIconModule,
     MatToolbarModule,
     MatMenuModule,
     MatTooltipModule,
+    MatSnackBarModule,
+    NzIconModule,
   ],
   providers: [
     ThemeInitializerProvider,
+    { provide: Window, useValue: window },
+    { provide: Document, useValue: document },
     { provide: NZ_I18N, useValue: es_ES },
-    { provide: LOCALE_ID, useValue: 'es' },
+    { provide: LOCALE_ID, useValue: 'esCo' },
   ],
   bootstrap: [AppComponent],
 })

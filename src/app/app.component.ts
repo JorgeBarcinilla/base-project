@@ -1,7 +1,9 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, TemplateRef, ViewChild } from '@angular/core';
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { ThemeService } from './theme/services/theme.service';
 import { Theme, ThemeMode } from './theme/models/theme.model';
+import { ConnectionService } from './utils/global/connection/connection.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +11,7 @@ import { Theme, ThemeMode } from './theme/models/theme.model';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  @ViewChild('offlineSnackBarTempl') offlineSnackBarTempl: TemplateRef<any>;
   title = 'Base-Project';
   themeMode = ThemeMode;
   themeSelected: Theme;
@@ -50,14 +53,28 @@ export class AppComponent {
   @HostBinding('class') componentClass: ThemeMode;
   constructor(
     private overlayContainer: OverlayContainer,
-    public _themeService: ThemeService
+    public _themeService: ThemeService,
+    private _connectionService: ConnectionService,
+    private _snackBar: MatSnackBar
   ) {
     this.themeSelected = this._themeService.getcurrentTheme();
     this.componentClass = this.themeSelected.getCurrentModeName;
     this.overlayContainer
       .getContainerElement()
       .classList.add(this.themeSelected.getCurrentModeName);
+    this._connectionService.changeOnlineStatus().subscribe((online) => {
+      if (!online) {
+        this._snackBar.open('Sin conexión a internet', null, {
+          horizontalPosition: 'right',
+          verticalPosition: 'bottom',
+        });
+      } else {
+        this._snackBar.dismiss();
+      }
+    });
   }
+
+  ngOnInit(): void {}
 
   public changeTheme(theme: Theme) {
     this.themeSelected = theme;
